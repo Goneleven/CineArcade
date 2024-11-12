@@ -13,20 +13,18 @@ CREATE TABLE Clientes(
     nome            VARCHAR(60) NOT NULL,
     telefone        VARCHAR(15) NOT NULL,
     email           VARCHAR(40) NOT NULL,
-    data_nascimento DATE,
-    id_endereco 	INT NOT NULL,
-    CONSTRAINT fk_id_endereco FOREIGN KEY (id_endereco) REFERENCES Enderecos(id_endereco)
+    data_nascimento DATE
 );
 
 -- DADOS DOS CLIENTES
 
 INSERT INTO Clientes(cpf, nome, telefone, email, data_nascimento, id_endereco) 
 VALUES 
-	('104.092.918-46', 'José Santana Pereira', '11 2350-7973', 'josesantana004@outlook.com', '1974-03-17', 1),
-	('099.784.428-04', 'Elza Sophia Lúcia Corte Real', '11 2512-1938', 'Elzasophiaa123@gmail.com', '1956-02-20', 2),
-	('255.527.438-30', 'Manoel Ryan Yago Rocha', '11 3543-8447', 'Manoelryanrocha@outlook.com', '1985-07-13', 3),
-    ('826.387.678-83', 'Emanuel Rafael da Rocha', '11 2670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19', 4),
-	('715.395.898-38', 'Lara Caroline Souza', '11 2791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11', 5);
+	('104.092.918-46', 'José Santana Pereira', '11 2350-7973', 'josesantana004@outlook.com', '1974-03-17'),
+	('099.784.428-04', 'Elza Sophia Lúcia Corte Real', '11 2512-1938', 'Elzasophiaa123@gmail.com', '1956-02-20'),
+	('255.527.438-30', 'Manoel Ryan Yago Rocha', '11 3543-8447', 'Manoelryanrocha@outlook.com', '1985-07-13'),
+    ('826.387.678-83', 'Emanuel Rafael da Rocha', '11 2670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19'),
+	('715.395.898-38', 'Lara Caroline Souza', '11 2791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11');
 
 SELECT * FROM Clientes;
 
@@ -129,132 +127,91 @@ SELECT * FROM Setores;
 -- CRIAÇÃO DA TABELA 'FORNECEDOR'
  
 CREATE TABLE Fornecedor(
-    cnpj     VARCHAR(30) PRIMARY KEY,
-    nome     VARCHAR(60),
-    telefone VARCHAR(15),
-    email    VARCHAR(40),
-    endereco VARCHAR(70),
-    cep      VARCHAR(9),
-    cidade   VARCHAR(30),
-    uf       VARCHAR(2),
-    id_setor INT,
-    FOREIGN KEY (id_setor) REFERENCES Setor(id_setor)
+    cnpj        VARCHAR(30) PRIMARY KEY,
+    nome        VARCHAR(60),
+    telefone    VARCHAR(15),
+    email       VARCHAR(40),
+    responsavel VARCHAR(40),
+    FOREIGN KEY (responsavel) REFERENCES Setor(id_setor)
 );
 
 -- DADOS DOS FORNECEDORES
 
-INSERT INTO Fornecedor(cnpj, nome, telefone, email, endereco, cep, cidade, uf, id_setor)
+INSERT INTO Fornecedor(cnpj, nome, telefone, email, endereco, cep, cidade, uf, responsavel)
 VALUES 
-	('37.460.882/0001-88', 'Indie na tela', '11 99785-4356', 'Indienatela@indiefilmes.com', 'Avenida Quatorze de Abril, Jardim IV Centenário, 279', '07160-180', 'Guarulhos', 'SP', 01),
-	('02.623.120/0001-70', 'LudiCube', '11 98153-1563', 'LudiCube@Cubeindie.com', 'Rua Romildo Ceola, Ferrazópolis, 381', '09781-090', 'São Bernardo do Campo', 'SP', 02),
-	('00.575.978/0001-81', 'FichasNEST', '14 31539-0606', 'Fichasnest@nestfichas.com', 'Rua João Plana, Núcleo Residencial Beija-Flor, 852 ', '17025-450', 'Bauru', 'SP', 03),
-	('18.956.203/0001-11', 'JoyQuest', '11 99450-0302','Joyquest@questjoy.com', 'Rua Bari, Utinga, 265', '09230-090', 'Santo André', 'SP', 04),
-	('71.690.325/0001-91', 'Culinária e Sabor', '11 98723-0323', 'Culinariaesabor@culinariaesabor.com', 'Avenida Santo Amaro, Vila Nova Conceição, 182', '04506-001', 'São Paulo', 'SP', 05);
+	('37.460.882/0001-88', 'Indie na tela', '11 99785-4356', 'Indienatela@indiefilmes.com', 01),
+	('02.623.120/0001-70', 'LudiCube', '11 98153-1563', 'LudiCube@Cubeindie.com', 02),
+	('00.575.978/0001-81', 'FichasNEST', '14 31539-0606', 'Fichasnest@nestfichas.com', 03),
+	('18.956.203/0001-11', 'JoyQuest', '11 99450-0302','Joyquest@questjoy.com',  04),
+	('71.690.325/0001-91', 'Culinária e Sabor', '11 98723-0323', 'Culinariaesabor@culinariaesabor.com', 05);
 
 -- SELECT PARA VISUALIZAR OS DADOS DOS FORNECEDORES
 
-SELECT f.cnpj, f.nome, f.telefone, f.email, f.endereco, f.cep, f.cidade, f.uf, s.setor
+SELECT f.cnpj, f.nome, f.telefone, f.email, s.setor
 FROM Fornecedor f
-JOIN setor s ON f.id_setor = s.id_setor;
+JOIN setor s ON f.responsavel = s.id_setor;
 
 -- CRIAÇÃO DA TABELA 'ARCADE' 
  
-CREATE TABLE Arcade(
+CREATE TABLE Maquinas(
     id_arcade INT PRIMARY KEY,
-    nome      VARCHAR(30),
-    id_fornecedor VARCHAR(30),
-    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(cnpj)
+    nome      VARCHAR(30)
 );
 
 -- DADOS DOS ARCADES
 
-INSERT INTO Arcade(id_arcade, nome, id_fornecedor)
+INSERT INTO Arcade(id_arcade, nome)
 VALUES 
-	(01,'Pac-Man', '18.956.203/0001-11'),
-	(02,'Donkey Kong', '18.956.203/0001-11'),
-	(03,'Space Invaders', '18.956.203/0001-11'),
-	(04,'Street Fighter II', '18.956.203/0001-11'),
-	(05,'Galaga', '18.956.203/0001-11');
+	(01,'Pac-Man'),
+	(02,'Donkey Kong'),
+	(03,'Space Invaders'),
+	(04,'Street Fighter II'),
+	(05,'Galaga');
 
--- SELECT PARA VISUALIZAR OS DADOS DOS ARCADES
+-- CRIAÇÃO DA TABELA 'MIDIAS'
 
-SELECT a.id_arcade, a.nome, f.nome AS nome_fornecedor
-FROM Arcade a
-JOIN Fornecedor f ON a.id_fornecedor = f.cnpj;
-
--- CRIAÇÃO DA TABELA 'PEDIDO FILME' 
- 
-CREATE TABLE Pedido_Filme(
-    id_pedido_filme   INT PRIMARY KEY,
-    id_filme          INT,
-    quantidade_pedida INT,
-    valor_total       DECIMAL(6, 2),
-    data_aluguel      DATE,
-    data_devolucao    DATE
+CREATE TABLE MIDIAS(
+   id_Midia               INT PRIMARY KEY, 
+   nome                   VARCHAR(40), 
+   valor_unitario         DECIMAL(6,2),
+   quantidade_total       INT, 
+   valor_total_do_estoque INT, 
+   tipo                   VARCHAR(10),
+   status_                VARCHAR(10)
 );
-
-INSERT INTO Pedido_Filme(id_pedido_filme, id_filme, quantidade_pedida, valor_total, data_aluguel, data_devolucao)
-VALUES 
-	(210, '0001', 01, 20.00, '2024-11-11','2024-11-18'),
-	(211, '0002', 01, 25.99, '2024-11-11','2024-11-18'),
-	(212, '0003', 01, 10.00, '2024-11-11','2024-11-18'),
-	(213, '0001', 01, 29.99, '2024-11-12','2024-11-19'),
-	(214, '0004', 02, 40.00, '2024-11-13','2024-11-20');
-
-SELECT * FROM Pedido_Filme;
-
--- CRIAÇÃO DA TABELA 'PEDIDO JOGO'
- 
-CREATE TABLE Pedido_Jogo(
-    id_pedido_jogo     INT PRIMARY KEY,
-    id_jogo            INT,
-    quantidade_pedida  INT,
-    valor_total        DECIMAL(6, 2),
-    data_aluguel       DATE,
-    data_devolucao     DATE
-);
-
-INSERT INTO Pedido_Jogo(id_pedido_jogo, id_jogo, quantidade_pedida, valor_total, data_aluguel, data_devolucao)
-VALUES 
-	(50, '0001', 01, 60.00, '2024-11-11','2024-11-18'),
-	(51, '0003', 02, 60.00, '2024-11-11','2024-11-18'),
-	(52, '0002', 02, 125.00, '2024-11-12','2024-11-19'),
-	(53, '0008', 01, 50.00, '2024-11-12','2024-11-19'),
-	(54, '0010', 01, 100.00, '2024-11-13','2024-11-20');
-
-SELECT * FROM Pedido_Jogo;
 
 -- CRIAÇÃO DA TABELA 'FICHAS'
  
 CREATE TABLE Fichas(
     id_fichas   INT PRIMARY KEY, 
-    id_arcade   INT, 
     quantidade  INT,
-    valor_total DECIMAL(6, 2),
-    FOREIGN KEY (id_arcade) REFERENCES Arcade(id_arcade)
+    valor_total DECIMAL(6, 2)
 );
 
-INSERT INTO Fichas(id_fichas, id_arcade, quantidade, valor_total)
+INSERT INTO Fichas(id_fichas, quantidade, valor_total)
 VALUES 
-	(01, '01', 500, 2500.00),
-	(02, '02', 100, 400.00),
-	(03, '03', 250, 1625.00),
-	(04, '04', 400, 4000.00),
-	(05, '05', 100, 350.00);
+	(01, 500, 2500.00),
+	(02, 100, 400.00),
+	(03, 250, 1625.00),
+	(04, 400, 4000.00),
+	(05, 100, 350.00);
 
 SELECT * FROM Fichas;
 
--- CRIAÇÃO DA TABELA 'PRODUTO' 
+-- CRIAÇÃO DA TABELA 'PEDIDO' 
 
-CREATE TABLE Produto(
-    id_produto      INT PRIMARY KEY,
-    id_pedido_filme INT, 
-    id_pedido_jogo  INT,
-    id_fichas       INT,
-    valor_total     DECIMAL(6, 2),
-	CONSTRAINT fk_id_pedido_filme FOREIGN KEY (id_pedido_filme) REFERENCES Pedido_Filme(id_pedido_filme),
-	CONSTRAINT fk_id_pedido_jogo FOREIGN KEY (id_pedido_jogo) REFERENCES Pedido_Jogo(id_pedido_jogo),
-    CONSTRAINT fk_id_fichas FOREIGN KEY (id_fichas) REFERENCES Fichas(id_fichas)
+CREATE TABLE PEDIDO(
+    id_pedido               INT PRIMARY KEY,
+	quantidade_pedida       INT, 
+    valor_total             DECIMAL(6, 2),
+    data_retirada           DATE,
+    data_prevista_devolucao DATE,
+    data_efetiva_devolucao  DATE
+);
+
+CREATE TABLE PRODUTO(
+    id_produto INT PRIMARY KEY,
+    Valor_total DECIMAL(6, 2)
 );
 
 -- CRIAÇÃO DA TABELA 'MÉTODO DE PAGAMENTO'
@@ -268,45 +225,6 @@ CREATE TABLE Metodo_De_Pagamento(
  
 CREATE TABLE Comanda(
     id_comanda      INT PRIMARY KEY,
-    id_cliente      VARCHAR(14),
-    id_produto      INT,
-    id_funcionario  VARCHAR(14),
     data            DATE,
-    horario         TIME,
-    id_pagamento    INT,
-    FOREIGN KEY (id_pagamento) REFERENCES Metodo_De_Pagamento(id_pagamento),
-    FOREIGN KEY (id_cliente) REFERENCES Clientes(cpf),
-    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto),
-    FOREIGN KEY (id_funcionario) REFERENCES Funcionarios(cpf)
-);
- 
--- CRIAÇÃO DA TABELA 'ESTOQUE FILME' 
- 
-CREATE TABLE Estoque_Filme(
-    id_filme               INT PRIMARY KEY,
-    nome                   VARCHAR(40),
-    quantidade_total       INT,
-    valor_unitario         DECIMAL(6, 2),
-    valor_total_do_estoque DECIMAL(8, 2),
-    id_aluguel             INT,
-    id_fornecedor          VARCHAR(30),
-    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(cnpj)
-);
-
--- PAREI AQUI!!!
--- INSERT INTO Estoque_Filme(id_filme, nome, quantidade_total, valor_unitario, valor_total_do_estoque, id_aluguel, id_fornecedor)
--- VALUES 
--- 	(01, 'Nise, o coração da loucura', 2, 20.00, ),
-
--- CRIAÇÃO DA TABELA 'ESTOQUE JOGO'
-
-CREATE TABLE Estoque_Jogo(
-    id_jogo                INT PRIMARY KEY, 
-    nome                   VARCHAR(40),
-    quantidade_total       INT,
-    valor_unitario         DECIMAL(6, 2),
-    valor_total_do_estoque DECIMAL(8, 2),
-    id_aluguel             INT, 
-    id_fornecedor          VARCHAR(30),
-    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(cnpj)
+    horario         TIME
 );
