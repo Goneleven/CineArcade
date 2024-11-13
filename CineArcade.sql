@@ -23,7 +23,7 @@ VALUES
 	('104.092.918-46', 'José Santana Pereira', '11 2350-7973', 'josesantana004@outlook.com', '1974-03-17'),
 	('099.784.428-04', 'Elza Sophia Lúcia Corte Real', '11 2512-1938', 'Elzasophiaa123@gmail.com', '1956-02-20'),
 	('255.527.438-30', 'Manoel Ryan Yago Rocha', '11 3543-8447', 'Manoelryanrocha@outlook.com', '1985-07-13'),
-    ('826.387.678-83', 'Emanuel Rafael da Rocha', '11 2670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19'),
+	('826.387.678-83', 'Emanuel Rafael da Rocha', '11 2670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19'),
 	('715.395.898-38', 'Lara Caroline Souza', '11 2791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11');
 
 SELECT * FROM Clientes;
@@ -49,7 +49,7 @@ VALUES
 	('Rua Professor Jurandyr de Oliveira, Jardim Esperança', 888, '08743-180', 'Mogi Das Cruzes', 'SP', 'Casa Portão Vermelho'),
 	('Avenida Capitão Arcílio Rizzi, Cézar de Souza', 798, '08820-130', 'Mogi Das Cruzes', 'SP', 'Condominio A'),
 	('Rua Loyde Aéreo, Jardim Aeroporto III', 579, '08761-500', 'Mogi Das Cruzes', 'SP', 'Condominio Bloco 7'),
-    ('Rua João Ribeiro de Brito, Vila Paulista', 546, '08744-030', 'Mogi Das Cruzes', 'SP', 'Villagio Vivendas'),
+	('Rua João Ribeiro de Brito, Vila Paulista', 546, '08744-030', 'Mogi Das Cruzes', 'SP', 'Villagio Vivendas'),
 	('Rua Davi Duran, Mogi Moderno', 783, '08717-445', 'Mogi Das Cruzes', 'SP', 'Casa');
 
 SELECT * FROM Enderecos;
@@ -170,14 +170,16 @@ VALUES
 
 -- CRIAÇÃO DA TABELA 'MIDIAS'
 
-CREATE TABLE MIDIAS(
-   id_Midia               INT PRIMARY KEY, 
+CREATE TABLE Midias(
+   id_midia               INT PRIMARY KEY, 
    nome                   VARCHAR(40), 
    valor_unitario         DECIMAL(6,2),
    quantidade_total       INT, 
    valor_total_do_estoque INT, 
    tipo                   VARCHAR(10),
-   status_                VARCHAR(10)
+   status_                VARCHAR(10),
+   cnpj_fornecedor		  VARCHAR(30),
+   CONSTRAINT fk_cnpj_fornecedor FOREIGN KEY(cnpj_fornecedor) REFERENCES Fornecedor(cnpj)
 );
 
 -- CRIAÇÃO DA TABELA 'FICHAS'
@@ -200,16 +202,24 @@ SELECT * FROM Fichas;
 
 -- CRIAÇÃO DA TABELA 'PEDIDO' 
 
-CREATE TABLE PEDIDO(
-    id_pedido               INT PRIMARY KEY,
-	quantidade_pedida       INT, 
+CREATE TABLE Pedido(
+    id_pedido               INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	quantidade_pedida       INT(30), 
     valor_total             DECIMAL(6, 2),
-    data_retirada           DATE,
+    data_retirada           DATE NOT NULL,
     data_prevista_devolucao DATE,
-    data_efetiva_devolucao  DATE
+    data_efetiva_devolucao  DATE,
+    id_midia				INT,
+    CONSTRAINT fk_id_midia FOREIGN KEY(id_midia) REFERENCES Midias(id_midia)
 );
 
-CREATE TABLE PRODUTO(
+SELECT * FROM Pedido;
+
+DESCRIBE Pedido;
+
+-- CRIAÇÃO DA TABELA 'PRODUTO'
+
+CREATE TABLE Produto(
     id_produto INT PRIMARY KEY,
     Valor_total DECIMAL(6, 2)
 );
@@ -220,11 +230,35 @@ CREATE TABLE Metodo_De_Pagamento(
     id_pagamento       INT PRIMARY KEY,
     forma_de_pagamento VARCHAR(30)
 );
+
+-- DADOS DE 'METODO_DE_PAGAMENTO'
+
+INSERT INTO Metodo_De_Pagamento(id_pagamento, forma_de_pagamento)
+VALUES
+	(01, 'Dinheiro'),
+    (02, 'Pix'),
+    (03, 'Crédito 1x'),
+    (04, 'Crédito 2x'),
+    (05, 'Clube Cinearcade');
+    
+SELECT * FROM Metodo_De_Pagamento;
+
+DESCRIBE Metodo_De_Pagamento;
  
 -- CRIAÇÃO DA TABELA 'COMANDA'
  
 CREATE TABLE Comanda(
     id_comanda      INT PRIMARY KEY,
     data            DATE,
-    horario         TIME
+    horario         TIME,
+    id_pagamento	INT NOT NULL,
+    cpf_cliente		 VARCHAR(14) NOT NULL,
+    cpf_funcionarios	VARCHAR(14) NOT NULL,
+    CONSTRAINT fk_ide_pagamento FOREIGN KEY (id_pagamento) REFERENCES Metodo_De_Pagamento(id_pagamento),
+    CONSTRAINT fk_cpf_cliente FOREIGN KEY (cpf_cliente) REFERENCES Clientes(cpf),
+    CONSTRAINT fk_cpf_funcionarios FOREIGN KEY (cpf_funcionarios) REFERENCES Funcionarios(cpf)
 );
+
+SELECT * FROM Comanda;
+
+DESCRIBE Comanda;
