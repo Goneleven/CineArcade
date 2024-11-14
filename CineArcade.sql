@@ -6,34 +6,8 @@ CREATE DATABASE CINEARCADE;
 
 USE CINEARCADE;
  
--- CRIAÇÃO DA TABELA 'CLIENTES'
-
-CREATE TABLE Clientes(
-    cpf             VARCHAR(14) PRIMARY KEY NOT NULL,
-    nome            VARCHAR(60) NOT NULL,
-    telefone        VARCHAR(15) NOT NULL,
-    email           VARCHAR(40) NOT NULL,
-    data_nascimento DATE
-);
-
--- DADOS DOS CLIENTES
-
-INSERT INTO Clientes(cpf, nome, telefone, email, data_nascimento, id_endereco) 
-VALUES 
-	('104.092.918-46', 'José Santana Pereira', '11 2350-7973', 'josesantana004@outlook.com', '1974-03-17'),
-	('099.784.428-04', 'Elza Sophia Lúcia Corte Real', '11 2512-1938', 'Elzasophiaa123@gmail.com', '1956-02-20'),
-	('255.527.438-30', 'Manoel Ryan Yago Rocha', '11 3543-8447', 'Manoelryanrocha@outlook.com', '1985-07-13'),
-	('826.387.678-83', 'Emanuel Rafael da Rocha', '11 2670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19'),
-	('715.395.898-38', 'Lara Caroline Souza', '11 2791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11');
-
-SELECT * FROM Clientes;
-
-DESCRIBE Clientes;
-
--- CRIAÇÃO DA TABELA 'ENDEREÇOS'
-
 CREATE TABLE Enderecos(
-	id_endereco INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	id_enderecos INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     logradouro VARCHAR(100) NOT NULL,
     numero INT(10) NOT NULL,
     cep VARCHAR(9) NOT NULL,
@@ -46,15 +20,54 @@ CREATE TABLE Enderecos(
 
 INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
 VALUES 
-	('Rua Professor Jurandyr de Oliveira, Jardim Esperança', 888, '08743-180', 'Mogi Das Cruzes', 'SP', 'Casa Portão Vermelho'),
-	('Avenida Capitão Arcílio Rizzi, Cézar de Souza', 798, '08820-130', 'Mogi Das Cruzes', 'SP', 'Condominio A'),
-	('Rua Loyde Aéreo, Jardim Aeroporto III', 579, '08761-500', 'Mogi Das Cruzes', 'SP', 'Condominio Bloco 7'),
-	('Rua João Ribeiro de Brito, Vila Paulista', 546, '08744-030', 'Mogi Das Cruzes', 'SP', 'Villagio Vivendas'),
+	('Rua Professor Jurandyr de Oliveira, Jardim Esperança', 888, '08743-180', 'Mogi Das Cruzes', 'SP', 'Casa Portão Vermelho');
+SET @id_endereco1 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Avenida Capitão Arcílio Rizzi, Cézar de Souza', 798, '08820-130', 'Mogi Das Cruzes', 'SP', 'Condominio A');
+SET @id_endereco2 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Rua Loyde Aéreo, Jardim Aeroporto III', 579, '08761-500', 'Mogi Das Cruzes', 'SP', 'Condominio Bloco 7');
+SET @id_endereco3 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Rua João Ribeiro de Brito, Vila Paulista', 546, '08744-030', 'Mogi Das Cruzes', 'SP', 'Villagio Vivendas');
+SET @id_endereco4 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
 	('Rua Davi Duran, Mogi Moderno', 783, '08717-445', 'Mogi Das Cruzes', 'SP', 'Casa');
+SET @id_endereco5 = LAST_INSERT_ID();
 
 SELECT * FROM Enderecos;
 
 DESCRIBE Enderecos;
+
+-- CRIAÇÃO DA TABELA 'CLIENTES'
+
+CREATE TABLE Clientes(
+    cpf             VARCHAR(14) PRIMARY KEY NOT NULL,
+    nome            VARCHAR(60) NOT NULL,
+    telefone        VARCHAR(15) NOT NULL,
+    email           VARCHAR(40) NOT NULL,
+    data_nascimento DATE,
+    id_endereco_cliente INT,
+    FOREIGN KEY (id_endereco_cliente) REFERENCES Enderecos(id_enderecos)
+);
+
+-- DADOS DOS CLIENTES
+
+INSERT INTO Clientes(cpf, nome, telefone, email, data_nascimento, id_endereco_cliente) 
+VALUES 
+	('104.092.918-46', 'José Santana Pereira', '11 2350-7973', 'josesantana004@outlook.com', '1974-03-17', @id_endereco1),
+    ('099.784.428-04', 'Elza Sophia Lúcia Corte Real', '11 2512-1938', 'Elzasophiaa123@gmail.com', '1956-02-20', @id_endereco2),
+    ('255.527.438-30', 'Manoel Ryan Yago Rocha', '11 3543-8447', 'Manoelryanrocha@outlook.com', '1985-07-13', @id_endereco3),
+    ('826.387.678-83', 'Emanuel Rafael da Rocha', '11 2670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19', @id_endereco4),
+    ('715.395.898-38', 'Lara Caroline Souza', '11 2791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11', @id_endereco5);
+
+SELECT * FROM Clientes;
+
+DESCRIBE Clientes;
 
 -- CRIAÇÃO DA TABELA 'CARGOS' 
  
