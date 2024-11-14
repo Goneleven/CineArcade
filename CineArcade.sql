@@ -38,6 +38,26 @@ INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento)
 VALUES 
 	('Rua Davi Duran, Mogi Moderno', 783, '08717-445', 'Mogi Das Cruzes', 'SP', 'Casa');
 SET @id_endereco5 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Rua João Gomes, Jardim Planalto', 602, '08790-345', 'Mogi Das Cruzes', 'SP', 'LudiCube');
+SET @id_enderecof01 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Avenida dos Trabalhadores, Centro', 2500, '08715-000', 'Mogi Das Cruzes', 'SP', 'FichasNest');
+SET @id_enderecof02 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Rua dos Imigrantes, Vila Bertioga', 511, '08773-220', 'Mogi Das Cruzes', 'SP', 'Joyquest');
+SET @id_enderecof03 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Avenida São Paulo, Parque das Laranjeiras', 872, '08734-101', 'Mogi Das Cruzes', 'SP', 'Brasil Indie');
+SET @id_enderecof04 = LAST_INSERT_ID();
+INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
+VALUES 
+	('Rua da Tecnologia, Jardim Novo Horizonte', 135, '08720-290', 'Mogi Das Cruzes', 'SP', 'IndieNaTela');
+SET @id_enderecof05 = LAST_INSERT_ID();
 
 SELECT * FROM Enderecos;
 
@@ -144,25 +164,27 @@ CREATE TABLE Fornecedor(
     nome        VARCHAR(60),
     telefone    VARCHAR(15),
     email       VARCHAR(40),
-    responsavel VARCHAR(40),
-    FOREIGN KEY (responsavel) REFERENCES Setor(id_setor)
+    responsavel_setor INT, 
+    id_endereco_fornecedor INT,
+    FOREIGN KEY (id_endereco_fornecedor) REFERENCES Enderecos(id_enderecos),
+    FOREIGN KEY (responsavel_setor) REFERENCES Setores(id_setor)
 );
 
 -- DADOS DOS FORNECEDORES
 
-INSERT INTO Fornecedor(cnpj, nome, telefone, email, endereco, cep, cidade, uf, responsavel)
+INSERT INTO Fornecedor(cnpj, nome, telefone, email, id_endereco_fornecedor, responsavel_setor)
 VALUES 
-	('37.460.882/0001-88', 'Indie na tela', '11 99785-4356', 'Indienatela@indiefilmes.com', 01),
-	('02.623.120/0001-70', 'LudiCube', '11 98153-1563', 'LudiCube@Cubeindie.com', 02),
-	('00.575.978/0001-81', 'FichasNEST', '14 31539-0606', 'Fichasnest@nestfichas.com', 03),
-	('18.956.203/0001-11', 'JoyQuest', '11 99450-0302','Joyquest@questjoy.com',  04),
-	('71.690.325/0001-91', 'Culinária e Sabor', '11 98723-0323', 'Culinariaesabor@culinariaesabor.com', 05);
+	('37.460.882/0001-88', 'Indie na Tela', '11 99785-4356', 'Indienatela@indiefilmes.com', @id_enderecof01, 01),
+	('02.623.120/0001-70', 'LudiCube', '11 98153-1563', 'LudiCube@Cubeindie.com', @id_enderecof02, 02),
+	('00.575.978/0001-81', 'FichasNEST', '14 31539-0606', 'Fichasnest@nestfichas.com', @id_enderecof03, 03),
+	('18.956.203/0001-11', 'JoyQuest', '11 99450-0302', 'Joyquest@questjoy.com', @id_enderecof04 , 02),
+	('71.690.325/0001-91', 'Brasil Indie', '11 98723-0323', 'Brasilindie@filmesbrindie.com', @id_enderecof05, 01);
 
 -- SELECT PARA VISUALIZAR OS DADOS DOS FORNECEDORES
 
-SELECT f.cnpj, f.nome, f.telefone, f.email, s.setor
+SELECT f.cnpj, f.nome, f.telefone, f.email, f.id_endereco_fornecedor AS Endereço, s.setor
 FROM Fornecedor f
-JOIN setor s ON f.responsavel = s.id_setor;
+JOIN Setores s ON f.responsavel_setor = s.id_setor;
 
 -- CRIAÇÃO DA TABELA 'ARCADE' 
  
@@ -173,7 +195,7 @@ CREATE TABLE Maquinas(
 
 -- DADOS DOS ARCADES
 
-INSERT INTO Arcade(id_arcade, nome)
+INSERT INTO Maquinas(id_arcade, nome)
 VALUES 
 	(01,'Pac-Man'),
 	(02,'Donkey Kong'),
@@ -194,6 +216,24 @@ CREATE TABLE Midias(
    cnpj_fornecedor		  VARCHAR(30),
    CONSTRAINT fk_cnpj_fornecedor FOREIGN KEY(cnpj_fornecedor) REFERENCES Fornecedor(cnpj)
 );
+
+-- DADOS DAS MIDIAS
+INSERT INTO Midias(Id_midia, nome, valor_unitario, quantidade_total, valor_total_do_estoque, tipo, status_, cnpj_fornecedor)
+VALUES (1, 'Chroma Squad', 30.99, 200, 30.99 * 200, 'Jogo', 'ON', '18.956.203/0001-11'),
+       (2, 'Horizon Chase Turbo', 29.99, 50, 29.99 * 50, 'Jogo', 'ON', '02.623.120/0001-70'),
+	   (3, 'Dandara', 15.00, 75, 15.00 * 75, 'Jogo', 'ON', '18.956.203/0001-11'),
+       (4, 'Blazing Chrome', 17.99, 120, 17.99 * 120, 'Jogo', 'ON', '18.956.203/0001-11'),
+       (5, 'Minoria', 21.55, 5, 21.55 * 5, 'Jogo', 'OFF', '02.623.120/0001-70'),
+       (6, 'Além do Horizonte', 37.50, 20, 37.50 * 20, 'Filme', 'ON','37.460.882/0001-88'),
+       (7, 'O Siléncio das Águas', 12.79, 0, 12.79 * 0, 'Filme', 'OFF', '71.690.325/0001-91'),
+	   (8, 'Caminhos Cruzados', 15.00, 49, 15.00 * 49, 'Filme', 'ON', '71.690.325/0001-91'),
+       (9, 'Entre Nós', 17.99, 12, 17.99 * 12, 'Filme', 'ON', '71.690.325/0001-91'),
+       (10, 'Vidas Paralelas', 20.00, 46, 20.00 * 46, 'Filme', 'ON', '37.460.882/0001-88');
+
+-- VISUALIZAR DADOS DA MIDIAS
+
+SELECT id_midia, nome, valor_unitario, quantidade_total, valor_total_do_estoque AS Preço, tipo, status_, cnpj_fornecedor
+FROM Midias;
 
 -- CRIAÇÃO DA TABELA 'FICHAS'
  
@@ -226,7 +266,9 @@ CREATE TABLE Pedido(
     CONSTRAINT fk_id_midia FOREIGN KEY(id_midia) REFERENCES Midias(id_midia)
 );
 
-SELECT * FROM Pedido;
+INSERT INTO Pedido(quantidade_pedida, valor_total, data_retirada, data_prevista_devolucao, data_efetiva_devolucao, id_midia)
+VALUES (2, 0, 14/11/2024,
+
 
 DESCRIBE Pedido;
 
