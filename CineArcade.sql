@@ -266,9 +266,27 @@ CREATE TABLE Pedido(
     CONSTRAINT fk_id_midia FOREIGN KEY(id_midia) REFERENCES Midias(id_midia)
 );
 
+-- Exemplo para pedidos com multa (caso atrasem)
 INSERT INTO Pedido(quantidade_pedida, valor_total, data_retirada, data_prevista_devolucao, data_efetiva_devolucao, id_midia)
-VALUES (2, 0, 14/11/2024,
+VALUES 
+    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), '2024-11-16', DATE_ADD('2024-11-16', INTERVAL 10 DAY), '2024-11-20', 1),
+    (3, 3 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), '2024-11-15', DATE_ADD('2024-11-15', INTERVAL 14 DAY), '2024-11-17', 2), 
+    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 4), '2024-11-14', DATE_ADD('2024-11-14', INTERVAL 12 DAY), '2024-11-20', 4),
+    (4, 4 * (SELECT valor_unitario FROM Midias WHERE id_midia = 3), '2024-11-13', DATE_ADD('2024-11-13', INTERVAL 20 DAY), NULL, 3),
+    (5, 5 * (SELECT valor_unitario FROM Midias WHERE id_midia = 10), '2024-10-12', DATE_ADD('2024-10-12', INTERVAL 7 DAY), '2024-10-22', 10);
 
+UPDATE Pedido
+SET 
+    valor_total = valor_total + 
+    (CASE 
+        WHEN data_efetiva_devolucao > data_prevista_devolucao THEN 
+            DATEDIFF(data_efetiva_devolucao, data_prevista_devolucao) * 0.01 * valor_total
+        ELSE 
+            0 
+    END)
+WHERE data_efetiva_devolucao IS NOT NULL AND data_efetiva_devolucao > data_prevista_devolucao;
+
+SELECT* FROM Pedido;
 
 DESCRIBE Pedido;
 
@@ -276,8 +294,20 @@ DESCRIBE Pedido;
 
 CREATE TABLE Produto(
     id_produto INT PRIMARY KEY,
-    Valor_total DECIMAL(6, 2)
+    id_fichas INT,
+    id_pedido INT,
+    valor_total DECIMAL(6, 2),
+    CONSTRAINT fk_id_fichas FOREIGN KEY(id_fichas) REFERENCES Fichas(id_fichas),
+    CONSTRAINT fk_id_pedido FOREIGN KEY(id_pedido) REFERENCES Pedido(id_pedido)
 );
+
+INSERT INTO Produto(id_produto, valor_total, id_fichas, id_pedido)
+VALUES 
+    (1, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), 1, 1),
+    (2, 3 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), 2, 4),
+    (3, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 4), 3, 5),
+    (4, 4 * (SELECT valor_unitario FROM Midias WHERE id_midia = 3), 4, 2),
+    (5, 5 * (SELECT valor_unitario FROM Midias WHERE id_midia = 10), 5, 3);
 
 -- CRIAÇÃO DA TABELA 'MÉTODO DE PAGAMENTO'
 
@@ -303,7 +333,7 @@ DESCRIBE Metodo_De_Pagamento;
 -- CRIAÇÃO DA TABELA 'COMANDA'
  
 CREATE TABLE Comanda(
-    id_comanda      INT PRIMARY KEY,
+    id_comanda      INT PRIMARY KEY AUTO_INCREMENT,
     data            DATE,
     horario         TIME,
     id_pagamento	INT NOT NULL,
@@ -314,6 +344,17 @@ CREATE TABLE Comanda(
     CONSTRAINT fk_cpf_funcionarios FOREIGN KEY (cpf_funcionarios) REFERENCES Funcionarios(cpf)
 );
 
-SELECT * FROM Comanda;
+-- Inserir dados de exemplo na tabela Comanda
+INSERT INTO Comanda (data, horario, id_pagamento, cpf_cliente, cpf_funcionarios)
+VALUES 
+    ('2024-11-16', '15:30:00', 1, '104.092.918-46', '220.959.228-32'),
+    ('2024-11-17', '16:00:00', 2, '099.784.428-04', '765.709.178-97'),
+    ('2024-11-18', '17:45:00', 3, '255.527.438-30', '589.075.478-58'),
+    ('2024-11-19', '18:15:00', 4, '826.387.678-83', '148.091.898-99'),
+    ('2024-11-20', '14:30:00', 5, '715.395.898-38', '259.620.088-04');
+
+SELECT c.id_comanda, c.data, c.horario, c.id_pagamento, c.cpf_cliente, f.nome AS nome_funcionario
+FROM Comanda c
+JOIN Funcionarios f ON c.cpf_funcionarios = f.cpf;
 
 DESCRIBE Comanda;
