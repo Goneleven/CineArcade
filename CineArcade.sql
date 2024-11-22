@@ -197,7 +197,7 @@ WHERE id_cargo = 2;
 
 SELECT * 
 FROM Cargos
-WHERE id_cargo = 1;
+WHERE cargo_ativo = 1;
 
 -- SELECT PARA VISUALIZAR A TABELA 'CARGOS'
 
@@ -456,7 +456,7 @@ WHERE status_ = 1;
 
 -- VISUALIZAR DADOS DA TABELA 'MIDIAS'
 
-SELECT id_midia, nome, CONCAT('R$ ', FORMAT(valor_unitario, 2, 'de_DE')) AS valor_unitario, quantidade_total, CONCAT('R$ ', FORMAT(valor_total_do_estoque, 2, 'de_DE')) AS Preço, tipo, status_, cnpj_fornecedor
+SELECT id_midia, nome, CONCAT('R$ ', FORMAT(valor_unitario, 2, 'pt_BR')) AS valor_unitario, quantidade_total, CONCAT('R$ ', FORMAT(valor_total_do_estoque, 2, 'Pt_BR')) AS Preço, tipo, status_, cnpj_fornecedor
 FROM Midias;
 
 -- CRIAÇÃO DA TABELA 'FICHAS'
@@ -498,7 +498,10 @@ WHERE fichas_ativo = 1;
 
 -- SELECT DE VISUALIZAÇÃO DA TABELA 'FICHAS'
 
-SELECT * FROM Fichas;
+SELECT id_fichas, quantidade, 
+       CONCAT('R$ ', FORMAT(valor_total, 2, 'pt_BR')) AS 'Valor Total'
+FROM Fichas
+WHERE fichas_ativo = 1;
 
 -- CRIAÇÃO DA TABELA 'PEDIDO' 
 
