@@ -137,7 +137,7 @@ DESCRIBE Clientes;
 
 -- CRIA UM INDICE PARA FACILITAR AS CONSULTAS DE 'CLIENTES'
 
-CREATE INDEX idx_clientes_cpf ON Clientes(cpf);
+CREATE INDEX idx_clientes_nome ON Clientes(nome);
 
 -- VISUALIZAÇÃO DO INDEX
 
@@ -145,7 +145,7 @@ SHOW INDEX FROM Clientes;
 
 -- SELECT PARA VISUALIZAR O 'CLIENTE' COM NOME QUE INICIA COM "E"
 
-SELECT cpf
+SELECT nome
 FROM Clientes
 WHERE nome LIKE 'E%';
 
@@ -660,6 +660,20 @@ WHERE id_pedido = 3;
 SELECT * 
 FROM Produto
 WHERE produto_ativo = 1;
+
+-- CRIA UM INDICE PARA FACILITAR AS CONSULTAS DE 'PRODUTO'
+
+CREATE INDEX idx_pedido ON Produto(id_pedido);
+
+-- VISUALIZAÇÃO DO INDEX
+
+SHOW INDEX FROM Produto;
+
+-- SELECT PARA VISUALIZAR O 'PRODUTO' PELO ID_PEDIDO
+
+SELECT id_pedido
+FROM Produto
+WHERE id_pedido IN ('1', '2' ,'5');
 
 -- SELECT DE VISUALIZAÇÃO DA TABELA 'PRODUTO'
 
