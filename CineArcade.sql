@@ -16,7 +16,7 @@ CREATE TABLE Enderecos(
     complemento VARCHAR(100) NOT NULL
 );
 
--- DADOS DE ENDEREÇOS
+-- DADOS DE ENDEREÇO DE CLIENTE E FORNECEDOR
 
 INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento) 
 VALUES 
@@ -59,7 +59,17 @@ VALUES
 	('Rua da Tecnologia, Jardim Novo Horizonte', 135, '08720-290', 'Mogi Das Cruzes', 'SP', 'IndieNaTela');
 SET @id_enderecof05 = LAST_INSERT_ID();
 
+-- UPDATE DE ATUALIZAÇÃO DE DADOS DE ENDEREÇO
+
+UPDATE Enderecos
+SET complemento = 'Casa Portão vermelho do lado do Bar do Zé'
+WHERE id_enderecos = @id_endereco1;
+
+-- SELECT PARA VISUALIZAR OS ENDEREÇOS
+
 SELECT * FROM Enderecos;
+
+-- DESCREVE A ESTRUTURA DA TABELA ENDEREÇO
 
 DESCRIBE Enderecos;
 
@@ -84,31 +94,44 @@ VALUES
     ('255.527.438-30', 'Manoel Ryan Yago Rocha', '11 93543-8447', 'Manoelryanrocha@outlook.com', '1985-07-13', @id_endereco3),
     ('826.387.678-83', 'Emanuel Rafael da Rocha', '11 92670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19', @id_endereco4),
     ('715.395.898-38', 'Lara Caroline Souza', '11 92791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11', @id_endereco5);
-    
-    
+
+-- UPDATE DE ATUALIZAÇÃO DE DADOS DO CLIENTE UTILIZANDO O ID_ENDERECO
+
+UPDATE Clientes
+SET telefone = '11 92512-1939'
+WHERE id_endereco_cliente = @id_endereco2;
+
+-- SELECT PARA VISUALIZAR OS DADOS DOS CLIENTES
 
 SELECT * FROM Clientes;
 
+-- DESCREVE A ESTRUTURA DA TABELA CLIENTES
+
 DESCRIBE Clientes;
 
--- CRIAÇÃO DA VIEW DO ENDEREÇO E CLIENTES
+-- CRIA UM INDICE PARA FACILITAR AS CONSULTAS DE CLIENTES
+
+CREATE INDEX idx_clientes_cpf ON Clientes(cpf);
+
+-- VISUALIZAÇÃO DO INDEX
+
+SHOW INDEX FROM Clientes;
+
+-- SELECT PARA VISUALIZAR O CLIENTE COM NOME QUE INICIA COM "E"
+
+SELECT cpf
+FROM Clientes
+WHERE nome LIKE 'E%';
+
+-- CRIAÇÃO DA VIEW DO ENDEREÇO E CLIENTES PEGANDO INFORMAÇÃO DAS DUAS TABELAS
 
 CREATE VIEW v_clientes_endereco AS
-SELECT 
-         c.cpf,
-         c.nome AS cliente,
-         c. telefone,
-         c.email,
-         e.logradouro,
-         e.cep,
-         e.numero,
-         e.cidade,
-         e.uf
+SELECT c.cpf, c.nome AS cliente, c. telefone, c.email, e.logradouro, e.cep, e.numero, e.cidade, e.uf
 FROM     Clientes c
 JOIN     Enderecos e ON c.id_endereco_cliente = e.id_enderecos
 ORDER BY c.nome;
 
--- SELECT PARA VISUALIZAR A VIEW CLIENTE E ENDEREÇO
+-- SELECT PARA VISUALIZAR A VIEW CLIENTE E ENDEREÇO JUNTAS
 
 SELECT * FROM v_clientes_endereco;
 
@@ -131,11 +154,21 @@ VALUES
 	(5, 'Assistente Geral'),
 	(6, 'Atendente');
 
+-- UPDATE DE ATUALIZAÇÃO NA TABELA CARGOS
+
+UPDATE Cargos
+SET funcoes = 'Gerência'
+WHERE id_cargo = 2;
+
+-- SELECT PARA VISUALIZAR A TABELA CARGOS
+
 SELECT * FROM Cargos;
+
+-- DESCREVE A ESTRUTURA DA TABELA CARGOS
 
 DESCRIBE Cargos;
 
--- CRIAÇÃO DA TABELA 'FUNCIONÁRIOS'
+-- CRIAÇÃO DA TABELA FUNCIONARIOS
  
 CREATE TABLE Funcionarios(
     cpf              VARCHAR(14) PRIMARY KEY,
@@ -148,13 +181,7 @@ CREATE TABLE Funcionarios(
     CONSTRAINT fk_id_cargo FOREIGN KEY (id_cargo) REFERENCES Cargos(id_cargo)
 );
 
--- SELECT PARA VISUALIZAR OS DADOS DOS FUNCIONARIOS
-
-SELECT f.cpf, f.nome, f.telefone, f.login, f.senha, f.data_contratacao, c.funcoes AS cargos
-FROM FUNCIONARIOS f
-JOIN cargos c ON f.id_cargo = c.id_cargo;
-
--- DADOS DE FUNCIONARIO
+-- DADOS DE FUNCIONARIOS
 
 INSERT INTO Funcionarios (cpf, nome, telefone, login, senha, data_contratacao, id_cargo)
 VALUES 
@@ -164,38 +191,53 @@ VALUES
 	('148.091.898-99', 'Leonardo Ryan Figueiredo', '11 96482-6969', 'Leo1212@', '07797@', '2023-04-05', 05),
 	('259.620.088-04', 'Davi Lucca Aparício', '11 98663-3326', 'Davi0079lucca@', '70970@', '2023-03-10', 06),
     ('648.559.478-73', 'Yan Baumgarten Costa', '11 94745-4113', 'YanTI001@', 'Yan716479@!', '2023-01-05', 04);
+
+-- UPDATE DE ATUALIZAÇÃO DA TABELA FUNCIONARIOS
+
+UPDATE Funcionarios
+SET senha = '80494@'
+WHERE cpf = '220.959.228-32';
+
+-- SELECT PARA VISUALIZAR OS DADOS DOS FUNCIONARIOS
+
+SELECT f.cpf, f.nome, f.telefone, f.login, f.senha, f.data_contratacao, c.funcoes AS cargos
+FROM FUNCIONARIOS f
+JOIN cargos c ON f.id_cargo = c.id_cargo;
     
--- VIEW PARA OS CARGOS E FUNCIONÁRIOS
+-- VIEW PARA VISUALIZAÇÃO DE CARGOS E FUNCIONARIOS
     
 CREATE VIEW v_cargo_funcionario AS
-SELECT 
-		 f.cpf,
-         nome AS funcionário, 
-         telefone,
-         data_contratacao AS 'Inicio de Contrato',
-         c.funcoes AS cargo
+SELECT f.cpf, nome AS funcionário, telefone, data_contratacao AS 'Inicio de Contrato', c.funcoes AS cargo
 FROM     Funcionarios f
 JOIN     Cargos c ON f.id_cargo = c.id_cargo
-ORDER BY f.data_contratacao DESC;
+ORDER BY f.data_contratacao;
 
--- SELECT PARA CARGOS E FUNCIONÁRIOS
+-- SELECT PARA 'CARGOS' E 'FUNCIONÁRIOS'
 
 SELECT * FROM v_cargo_funcionario;
         
--- CRIAÇÃO DA TABELA 'SETOR'
+-- CRIAÇÃO DA TABELA 'SETORES'
  
 CREATE TABLE Setores (
     id_setor INT(10) AUTO_INCREMENT PRIMARY KEY,
     setor    VARCHAR(40)
 );
 
--- DADOS DOS FONECEDORES
+-- DADOS DOS 'SETORES'
 
 INSERT INTO Setores (setor)
 VALUES 
-	('Fornecedor Filmes'),
+	('Fornecedor de Filmes'),
 	('Fornecedor Jogos'),
-	('Fornecedor Arcade');
+	('Fornecedor de Arcade');
+
+-- UPDATE DE ATUALIZAÇÃO DA TABELA 'SETORES'
+
+UPDATE Setores
+SET setor = 'Fornecedor de jogos'
+WHERE id_setor = '3';
+
+-- SELECT DE VISUALIZAÇÃO DA TABELA 'SETORES'
     
 SELECT * FROM Setores;
 
@@ -212,7 +254,7 @@ CREATE TABLE Fornecedor(
     FOREIGN KEY (responsavel_setor) REFERENCES Setores(id_setor)
 );
 
--- DADOS DOS FORNECEDORES
+-- DADOS DOS 'FORNECEDOR'
 
 INSERT INTO Fornecedor(cnpj, nome, telefone, email, id_endereco_fornecedor, responsavel_setor)
 VALUES 
@@ -222,44 +264,56 @@ VALUES
 	('18.956.203/0001-11', 'JoyQuest', '11 99450-0302', 'Joyquest@questjoy.com', @id_enderecof04 , 02),
 	('71.690.325/0001-91', 'Brasil Indie', '11 98723-0323', 'Brasilindie@filmesbrindie.com', @id_enderecof05, 01);
 
--- SELECT PARA VISUALIZAR OS DADOS DOS FORNECEDORES
+-- UPDATE DE ATUALIZAÇÃO PARA TABELA 'FORNECEDOR'
+
+UPDATE Fornecedor
+SET email = 'Indiesnatela@indiefilmes.com'
+WHERE cnpj = '37.460.882/0001-88';
+
+-- SELECT PARA VISUALIZAR OS DADOS DO 'FORNECEDOR'
 
 SELECT f.cnpj, f.nome, f.telefone, f.email, f.id_endereco_fornecedor AS Endereço, s.setor
 FROM Fornecedor f
 JOIN Setores s ON f.responsavel_setor = s.id_setor;
 
--- VIEW SETOR E FORNECEDOR
+-- VIEW RELACIONAL DA TABELA 'SETOR' E 'FORNECEDOR'
 
 CREATE VIEW v_fornecedor_setor AS
-SELECT    f.cnpj,
-          f.nome AS fornecedor,
-          f.telefone, 
-          f.email,
-          s.setor
+SELECT    f.cnpj, f.nome AS fornecedor, f.telefone, f.email, s.setor
 FROM      Fornecedor f
 JOIN      Setores s ON f.responsavel_setor = s.id_setor
 ORDER BY  s.setor, f.nome;     
 
--- SELECT PARA VISUALIZAR A VIEW SETOR E FORNECEDOR
+-- SELECT PARA VISUALIZAR A VIEW 'SETOR' E 'FORNECEDOR'
 
 SELECT * FROM v_fornecedor_setor;
 
--- CRIAÇÃO DA TABELA 'ARCADE' 
+-- CRIAÇÃO DA TABELA 'MAQUINAS' 
  
 CREATE TABLE Maquinas(
     id_arcade INT PRIMARY KEY,
     nome      VARCHAR(30)
 );
 
--- DADOS DOS ARCADES
+-- DADOS DAS 'MAQUINAS'
 
 INSERT INTO Maquinas(id_arcade, nome)
 VALUES 
 	(1,'Pac-Man'),
 	(2,'Donkey Kong'),
 	(3,'Space Invaders'),
-	(4,'Street Fighter II'),
+	(4,'Street Fighter'),
 	(5,'Galaga');
+
+-- UPDATE DE ATUALIZAÇÃO NA TABELA 'MAQUINAS'
+    
+    UPDATE Maquinas
+SET nome = 'Street Fighter II'
+WHERE id_arcade = 4;
+
+-- SELECT DE VISUALIZAÇÃO DA TABELA 'MAQUINA'
+
+SELECT * FROM Maquinas;
 
 -- CRIAÇÃO DA TABELA 'MIDIAS'
 
@@ -276,6 +330,7 @@ CREATE TABLE Midias(
 );
 
 -- DADOS DAS MIDIAS
+
 INSERT INTO Midias(Id_midia, nome, valor_unitario, quantidade_total, valor_total_do_estoque, tipo, status_, cnpj_fornecedor)
 VALUES (1, 'Chroma Squad', 30.99, 200, 30.99 * 200, 'Jogo', 'ON', '18.956.203/0001-11'),
        (2, 'Horizon Chase Turbo', 29.99, 50, 29.99 * 50, 'Jogo', 'ON', '02.623.120/0001-70'),
@@ -288,9 +343,22 @@ VALUES (1, 'Chroma Squad', 30.99, 200, 30.99 * 200, 'Jogo', 'ON', '18.956.203/00
        (9, 'Entre Nós', 17.99, 12, 17.99 * 12, 'Filme', 'ON', '71.690.325/0001-91'),
        (10, 'Vidas Paralelas', 20.00, 46, 20.00 * 46, 'Filme', 'ON', '37.460.882/0001-88');
 
--- VISUALIZAR DADOS DA MIDIAS
+-- UPDATE DE ATUALIZAÇÃO PARA A TABELA 'MIDIAS'       
+       
+UPDATE Midias
+SET quantidade_total = 20, 
+    valor_total_do_estoque = 12.79 * 20
+WHERE id_midia = 7;
 
-SELECT id_midia, nome, valor_unitario, quantidade_total, valor_total_do_estoque AS Preço, tipo, status_, cnpj_fornecedor
+-- UPDATE DE EXCLUSÃO LÓGICA PARA TABELA 'MIDIAS'
+
+UPDATE Midias
+SET status_ = 'ON'
+WHERE id_midia = 7;
+
+-- VISUALIZAR DADOS DA TABELA 'MIDIAS'
+
+SELECT id_midia, nome, CONCAT('R$ ', FORMAT(valor_unitario, 2, 'de_DE')) AS valor_unitario, quantidade_total, CONCAT('R$ ', FORMAT(valor_total_do_estoque, 2, 'de_DE')) AS Preço, tipo, status_, cnpj_fornecedor
 FROM Midias;
 
 -- CRIAÇÃO DA TABELA 'FICHAS'
@@ -301,6 +369,8 @@ CREATE TABLE Fichas(
     valor_total DECIMAL(6, 2)
 );
 
+-- INSERÇÃO DE DADOS DA TABELA 'FICHAS'
+
 INSERT INTO Fichas(id_fichas, quantidade, valor_total)
 VALUES 
 	(1, 500, 5 * 500),
@@ -308,6 +378,14 @@ VALUES
 	(3, 250, 5 * 250),
 	(4, 400, 5 * 400),
 	(5, 100, 5 * 100);
+
+-- UPDATE DE ATUALIZAÇÃO PARA TABELA 'FICHAS'
+
+UPDATE Fichas
+SET quantidade = 800
+WHERE id_fichas = 5;
+
+-- SELECT DE VISUALIZAÇÃO DA TABELA 'FICHAS'
 
 SELECT * FROM Fichas;
 
@@ -324,20 +402,24 @@ CREATE TABLE Pedido(
     CONSTRAINT fk_id_midia FOREIGN KEY(id_midia) REFERENCES Midias(id_midia)
 );
 
--- INSERT PEDIDO
+-- TRANSACTION
+
+START TRANSACTION;
+
+-- INSERT DA TABELA 'PEDIDO'
 
 INSERT INTO Pedido(quantidade_pedida, valor_total, data_retirada, data_prevista_devolucao, data_efetiva_devolucao, id_midia)
 VALUES 
-    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), '2024-11-01', DATE_ADD('2024-11-01', INTERVAL 10 DAY), '2024-11-10', 1),
-    (3, 3 * (SELECT valor_unitario FROM Midias WHERE id_midia = 6), '2024-10-25', DATE_ADD('2024-10-25', INTERVAL 12 DAY), '2024-11-06', 6),
-    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 3), '2024-11-02', DATE_ADD('2024-11-02', INTERVAL 15 DAY), '2024-11-17', 3),
-    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 9), '2024-10-31', DATE_ADD('2024-10-31', INTERVAL 7 DAY), '2024-11-07', 9),
-    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 4), '2024-11-10', DATE_ADD('2024-11-10', INTERVAL 20 DAY), '2024-11-24', 4),
-    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), '2024-10-15', DATE_ADD('2024-10-15', INTERVAL 15 DAY), '2024-11-05', 2),
-    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 7), '2024-10-10', DATE_ADD('2024-10-10', INTERVAL 20 DAY), NULL, 7),
-    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 8), '2024-09-25', DATE_ADD('2024-09-25', INTERVAL 14 DAY), '2024-10-10', 8);
+    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), '2024-11-01', '2024-11-01' + INTERVAL 30 DAY, '2024-11-10', 1),
+    (3, 3 * (SELECT valor_unitario FROM Midias WHERE id_midia = 6), '2024-10-25', '2024-10-25' + INTERVAL 30 DAY, '2024-11-06', 6),
+    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 3), '2024-11-02', '2024-11-02' + INTERVAL 30 DAY, '2024-11-17', 3),
+    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 9), '2024-10-31', '2024-10-31' + INTERVAL 30 DAY, '2024-11-07', 9),
+    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 4), '2024-11-10', '2024-11-10' + INTERVAL 30 DAY, '2024-11-24', 4),
+    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), '2024-10-15', '2024-10-15' + INTERVAL 30 DAY, '2024-11-05', 2),
+    (1, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 7), '2024-10-10', '2024-10-10' + INTERVAL 30 DAY, NULL, 7),
+    (2, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 8), '2024-09-25', '2024-09-25' + INTERVAL 30 DAY, '2024-10-10', 8);
 
--- UPDATE PEDIDO ATUALIZAÇÃO
+-- BAIXA DO PEDIDO COM MULTA COM DEVOLUÇÃO APÓS DO PRAZO COM UPDATE DE ATUALIZAÇÃO
 
 UPDATE Pedido
 SET 
@@ -348,7 +430,14 @@ SET
         ELSE 
             0 
     END)
-WHERE data_efetiva_devolucao IS NOT NULL AND data_efetiva_devolucao > data_prevista_devolucao;
+WHERE data_efetiva_devolucao IS NOT NULL 
+    AND data_efetiva_devolucao > data_prevista_devolucao;
+
+COMMIT;
+
+UPDATE Pedido
+SET data_efetiva_devolucao = '2024-11-11'
+WHERE id_midia = 1;
 
 -- SELECT PARA VISUALIZAR MULTA
 
@@ -368,13 +457,13 @@ WHERE
 ORDER BY 
     p.data_prevista_devolucao;
 
--- SELECT PEDIDO
+-- SELECT DA TABELA 'PEDIDO'
 
 SELECT* FROM Pedido;
 
--- VIEW PARA PEDIDOS E MIDIAS 
+-- CRIAÇÃO DA VIEW PARA TABELA 'PEDIDO' E 'MIDIAS'
 
-CREATE VIEW v_pedidos_midias AS
+CREATE VIEW v_pedido_midias AS
 SELECT 
     p.id_pedido,
     p.quantidade_pedida,
@@ -384,10 +473,23 @@ SELECT
     m.nome AS midia
 FROM Pedido p
 JOIN Midias m ON p.id_midia = m.id_midia
-ORDER BY p.data_retirada;
+ORDER BY id_pedido;
 
--- Visualizar a View
-SELECT * FROM v_pedidos_midias;
+-- VISUALIZAR A VIEW DA TABELA 'PEDIDO' E 'MIDIAS'
+
+SELECT * FROM v_pedido_midias;
+
+-- CRIAÇÃO DO INDEX DA TABELA 'PEDIDO' PARA 'DATA_RETIRADA' E 'DATA_EFETIVA_DEVOLUCAO'
+
+CREATE INDEX idx_data_saida_data_retorno ON Pedido(data_retirada, data_efetiva_devolucao);
+
+-- SELECT PARA VISUALIZAR 'DATA_RETIRADA' E 'DATA_EFETIVA_DEVOLUÇÃO'
+
+SELECT data_retirada, data_efetiva_devolucao
+FROM Pedido
+WHERE id_midia IN ('1', '3' ,'4');
+
+-- DESCREVER TABELA 'PEDIDO'
 
 DESCRIBE Pedido;
 
@@ -403,6 +505,8 @@ CREATE TABLE Produto(
     CONSTRAINT fk_id_pedido FOREIGN KEY(id_pedido) REFERENCES Pedido(id_pedido)
 );
 
+-- INSERÇÃO DE DADOS DA TABELA 'PRODUTO' 
+
 INSERT INTO Produto(id_produto, valor_total, id_fichas, quantidade_fichas, id_pedido)
 VALUES 
     (1, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), NULL, NULL, 1), 
@@ -413,6 +517,16 @@ VALUES
     (6, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), NULL, NULL, 6), 
     (7, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 7), 4, 1, 7), 
     (8, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 8), 3, 7, 8); 
+
+-- UPDATE DE ATUALIZAÇÃO DA TABELA 'PRODUTO'
+    
+    UPDATE Produto
+SET quantidade_fichas = 9
+WHERE id_pedido = 3;
+
+-- SELECT DE VISUALIZAÇÃO DA TABELA 'PRODUTO'
+
+SELECT * FROM PRODUTO;
 
 -- CRIAÇÃO DA TABELA 'MÉTODO DE PAGAMENTO'
 
@@ -429,9 +543,20 @@ VALUES
     (02, 'Pix'),
     (03, 'Crédito 1x'),
     (04, 'Crédito 2x'),
-    (05, 'Clube Cinearcade');
+    (05, 'Clube Cinearcade'),
+    (06, 'Débito');
+
+-- UPDATE DE ATUALIZAÇÃO PARA TABELA 'METODO_DE_PAGAMENTO'
+    
+UPDATE Metodo_De_Pagamento
+SET forma_de_pagamento = 'Cartão de Débito'
+WHERE id_pagamento = 06;
+
+-- SELECT PARA VISUALIZAR TABELA 'METODO_DE_PAGAMENTO'
     
 SELECT * FROM Metodo_De_Pagamento;
+
+-- DESCREVER 'METODO_DE_PAGAMENTO'
 
 DESCRIBE Metodo_De_Pagamento;
  
@@ -441,20 +566,17 @@ CREATE TABLE Comanda(
     id_comanda          INT PRIMARY KEY AUTO_INCREMENT,
     data                DATE,
     horario             TIME,
-    fichas              INT,  
-    Total               DECIMAL(6, 2),
     id_pagamento        INT NOT NULL,
     cpf_cliente         VARCHAR(14) NOT NULL,
     cpf_funcionarios    VARCHAR(14) NOT NULL,
     valor_total_produto DECIMAL(6, 2),
     CONSTRAINT fk_id_pagamento FOREIGN KEY (id_pagamento) REFERENCES Metodo_De_Pagamento(id_pagamento),
     CONSTRAINT fk_cpf_cliente FOREIGN KEY (cpf_cliente) REFERENCES Clientes(cpf),
-    CONSTRAINT fk_cpf_funcionarios FOREIGN KEY (cpf_funcionarios) REFERENCES Funcionarios(cpf),
-    CONSTRAINT fk_fichas FOREIGN KEY (fichas) REFERENCES Produto(quantidade_fichas),
-    CONSTRAINT fk_total FOREIGN KEY (Total) REFERENCES Produto(valor_total) 
+    CONSTRAINT fk_cpf_funcionarios FOREIGN KEY (cpf_funcionarios) REFERENCES Funcionarios(cpf)
 );
 
--- Inserir dados de exemplo na tabela Comanda
+-- INSERÇÃO DE DADOS NA TABELA 'COMANDA'
+
 INSERT INTO Comanda (data, horario, id_pagamento, cpf_cliente, cpf_funcionarios)
 VALUES 
     ('2024-11-16', '15:30:00', 1, '104.092.918-46', '220.959.228-32'),
@@ -463,28 +585,33 @@ VALUES
     ('2024-11-19', '18:15:00', 4, '826.387.678-83', '148.091.898-99'),
     ('2024-11-20', '14:30:00', 5, '715.395.898-38', '259.620.088-04');
 
-SELECT c.id_comanda, c.data, c.horario, c.id_pagamento, c.cpf_cliente, f.nome AS nome_funcionario
+-- UPDATE DE ATUALIZAÇÃO NA TABELA 'COMANDA'
+   
+UPDATE Comanda
+SET horario = '15:29:45'
+WHERE id_pagamento = 1;
+
+-- SELECT DE VISUALIZAÇÃO DA TABELA 'COMANDA' E 'FUNCIONARIOS'
+
+SELECT 
+    c.id_comanda, c.data, c.horario, c.id_pagamento, c.cpf_cliente, f.nome AS nome_funcionario
 FROM Comanda c
 JOIN Funcionarios f ON c.cpf_funcionarios = f.cpf;
 
--- VIEW PARA COMANDOS E PAGAMENTO
+-- VIEW PARA 'COMANDA', 'CLIENTES, 'METODO_DE_PAGAMENTO' E 'FUNCIONARIOS'
 
-CREATE VIEW v_comandas_pagamento AS
-SELECT 
-    co.id_comanda,
-    co.data,
-    co.horario,
-    mp.forma_de_pagamento,
-    c.nome AS cliente,
-    f.nome AS funcionario
+CREATE VIEW v_comanda_pagamento AS
+SELECT co.id_comanda, co.data, co.horario, mp.forma_de_pagamento, c.nome AS cliente, f.nome AS funcionario
 FROM Comanda co
 JOIN Metodo_De_Pagamento mp ON co.id_pagamento = mp.id_pagamento
 JOIN Clientes c ON co.cpf_cliente = c.cpf
 JOIN Funcionarios f ON co.cpf_funcionarios = f.cpf
 ORDER BY co.data DESC;
 
--- SELECT PARA VISUALIZAR COMANDAS E PAGAMENTO
+-- SELECT PARA VISUALIZAR 'COMANDA' E 'PAGAMENTO'
 
 SELECT * FROM v_comandas_pagamento;
+
+-- DESCREVER A ESTRUTURA DA TABELA 'COMANDA'
 
 DESCRIBE Comanda;
