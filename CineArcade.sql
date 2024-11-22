@@ -610,7 +610,7 @@ ORDER BY co.data DESC;
 
 -- SELECT PARA VISUALIZAR 'COMANDA' E 'PAGAMENTO'
 
-SELECT * FROM v_comandas_pagamento;
+SELECT * FROM v_comanda_pagamento;
 
 -- DESCREVER A ESTRUTURA DA TABELA 'COMANDA'
 
