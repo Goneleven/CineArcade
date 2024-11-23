@@ -456,7 +456,7 @@ WHERE status_ = 1;
 
 -- VISUALIZAR DADOS DA TABELA 'MIDIAS'
 
-SELECT id_midia, nome, CONCAT('R$ ', FORMAT(valor_unitario, 2, 'pt_BR')) AS valor_unitario, quantidade_total, CONCAT('R$ ', FORMAT(valor_total_do_estoque, 2, 'Pt_BR')) AS Preço, tipo, status_, cnpj_fornecedor
+SELECT id_midia, nome, CONCAT('R$ ', FORMAT(valor_unitario, 2, 'pt_BR')) AS valor_unitario, quantidade_total, CONCAT('R$ ', FORMAT(valor_total_do_estoque, 2, 'pt_BR')) AS Preço, tipo, status_, cnpj_fornecedor
 FROM Midias;
 
 -- CRIAÇÃO DA TABELA 'FICHAS'
@@ -472,6 +472,7 @@ CREATE TABLE Fichas(
 
 INSERT INTO Fichas(id_fichas, quantidade, valor_total, fichas_ativo)
 VALUES 
+    (0, 0, 0, 1),
 	(1, 500, 5 * 500, 1),
 	(2, 100, 5 * 100, 1),
 	(3, 250, 5 * 250, 1),
@@ -559,7 +560,7 @@ WHERE id_midia = 1;
 SELECT
     p.id_pedido, 
     p.quantidade_pedida, 
-    p.valor_total, 
+	CONCAT('R$', FORMAT(p.valor_total, 2, 'pt_BR')) AS 'Valor Total',  
     p.data_retirada, 
     p.data_prevista_devolucao, 
     DATEDIFF(CURDATE(), p.data_prevista_devolucao) AS dias_de_atraso,
@@ -637,12 +638,12 @@ CREATE TABLE Produto(
 
 INSERT INTO Produto(id_produto, valor_total, id_fichas, quantidade_fichas, id_pedido, produto_ativo)
 VALUES 
-    (1, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), NULL, NULL, 1, 1), 
+    (1, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 1), 0, 0, 1, 1), 
     (2, 3 * (SELECT valor_unitario FROM Midias WHERE id_midia = 6), 1, 8, 2, 1), 
     (3, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 3), 2, 10, 3, 1), 
     (4, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 9), 5, 3, 4, 1), 
     (5, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 4), 3, 1, 5, 1), 
-    (6, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), NULL, NULL, 6, 1), 
+    (6, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 2), 0, 0, 6, 1), 
     (7, 1 * (SELECT valor_unitario FROM Midias WHERE id_midia = 7), 4, 1, 7, 1), 
     (8, 2 * (SELECT valor_unitario FROM Midias WHERE id_midia = 8), 3, 7, 8, 1); 
 
@@ -736,12 +737,14 @@ CREATE TABLE Comanda(
     id_pagamento        INT NOT NULL,
     cpf_cliente         VARCHAR(14) NOT NULL,
     cpf_funcionarios    VARCHAR(14) NOT NULL,
-    valor_total_produto DECIMAL(6, 2),
+    Valor_total_comanda INT NOT NULL,
+    fichas_total INT NOT NULL, 
     CONSTRAINT fk_id_pagamento FOREIGN KEY (id_pagamento) REFERENCES Metodo_De_Pagamento(id_pagamento),
     CONSTRAINT fk_cpf_cliente FOREIGN KEY (cpf_cliente) REFERENCES Clientes(cpf),
     CONSTRAINT fk_cpf_funcionarios FOREIGN KEY (cpf_funcionarios) REFERENCES Funcionarios(cpf),
     comanda_ativo TINYINT (1) DEFAULT 1
 );
+
 
 -- INSERÇÃO DE DADOS NA TABELA 'COMANDA'
 
@@ -753,11 +756,22 @@ VALUES
     ('2024-11-19', '18:15:00', 4, '826.387.678-83', '148.091.898-99', 1),
     ('2024-11-20', '14:30:00', 5, '715.395.898-38', '259.620.088-04', 1);
 
--- UPDATE DE ATUALIZAÇÃO NA TABELA 'COMANDA'
+-- UPDATE DE ATUALIZAÇÃO NA TABELA 'COMANDA' DO 'VALOR TOTAL'
    
-UPDATE Comanda
-SET horario = '15:29:45'
-WHERE id_pagamento = 1;
+UPDATE Comanda c
+JOIN Produto p ON c.id_comanda = p.id_pedido
+SET c.Valor_total_comanda = (
+    SELECT SUM(p2.valor_total)
+    FROM Produto p2
+    WHERE p2.id_pedido = c.id_comanda AND p2.produto_ativo = 1
+);
+
+-- UPDATE DE ATUALIZAÇÃO NA TABELA 'COMANDA' DAS 'FICHAS'
+
+UPDATE Comanda c
+JOIN Produto p ON c.id_comanda = id_fichas
+SET c.fichas_total = p.quantidade_fichas
+WHERE produto_ativo = 1;
 
 -- UPDATE DE EXCLUSÃO DE DADOS DE 'COMANDA'
 
@@ -774,19 +788,19 @@ WHERE comanda_ativo = 1;
 -- SELECT DE VISUALIZAÇÃO DA TABELA 'COMANDA' E 'FUNCIONARIOS'
 
 SELECT 
-    c.id_comanda, c.data, c.horario, c.id_pagamento, c.cpf_cliente, f.nome AS nome_funcionario
+    c.id_comanda AS 'Comanda', c.data AS 'Data de Pagamento', c.horario AS 'Horário de Pagamento', c.id_pagamento AS 'Ordem de Pagamento', c.cpf_cliente AS 'CPF do Cliente', CONCAT('R$ ', FORMAT(c.valor_total_comanda, 2, 'pt_BR')) AS 'Valor Total da Comanda', c.fichas_total AS 'Total de Fichas', f.nome AS 'Nome do Funcionário'
 FROM Comanda c
 JOIN Funcionarios f ON c.cpf_funcionarios = f.cpf;
 
 -- VIEW PARA 'COMANDA', 'CLIENTES', 'METODO_DE_PAGAMENTO' E 'FUNCIONARIOS'
 
 CREATE VIEW v_comanda_pagamento AS
-SELECT co.id_comanda, co.data, co.horario, mp.forma_de_pagamento, c.nome AS cliente, f.nome AS funcionario
-FROM Comanda co
-JOIN Metodo_De_Pagamento mp ON co.id_pagamento = mp.id_pagamento
-JOIN Clientes c ON co.cpf_cliente = c.cpf
-JOIN Funcionarios f ON co.cpf_funcionarios = f.cpf
-ORDER BY co.data DESC;
+SELECT c.id_comanda, c.data, c.horario, mp.forma_de_pagamento, cl.nome AS cliente, f.nome AS funcionario
+FROM Comanda c
+JOIN Metodo_De_Pagamento mp ON c.id_pagamento = mp.id_pagamento
+JOIN Clientes cl ON c.cpf_cliente = cl.cpf
+JOIN Funcionarios f ON c.cpf_funcionarios = f.cpf
+ORDER BY c.data DESC;
 
 -- SELECT PARA VISUALIZAR 'COMANDA' E 'PAGAMENTO'
 
