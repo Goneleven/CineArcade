@@ -1,11 +1,13 @@
--- CRIAÇÃO DO BANCO DE DADOS 'CINEARCADE'
+-- CRIAÇÃO DO BANCO DE DADOS: 'CINEARCADE'
 
 CREATE DATABASE CINEARCADE;
 
--- UTILIZAR O BANCO 'CINEARCADE'
+-- UTILIZAR O BANCO DE DADOS: 'CINEARCADE'
 
 USE CINEARCADE;
  
+-- CRIAÇÃO DA TABELA: 'ENDEREÇOS'
+
 CREATE TABLE Enderecos(
 	id_enderecos INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     logradouro VARCHAR(100) NOT NULL,
@@ -17,7 +19,7 @@ CREATE TABLE Enderecos(
     ativo TINYINT(1) DEFAULT 1
 );
 
--- DADOS DE ENDEREÇO DE 'CLIENTE' E 'FORNECEDOR'
+-- DADOS DOS ENDEREÇOS DE 'CLIENTE' E 'FORNECEDOR'
 
 INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento, ativo) 
 VALUES 
@@ -58,7 +60,7 @@ SET @id_enderecof04 = LAST_INSERT_ID();
 INSERT INTO Enderecos(logradouro, numero, cep, cidade, uf, complemento, ativo) 
 VALUES 
 	('Rua da Tecnologia, Jardim Novo Horizonte', 135, '08720-290', 'Mogi Das Cruzes', 'SP', 'IndieNaTela', 1);
-SET @id_enderecof05 = LAST_INSERT_ID();
+SET @id_enderecof05 = LAST_INSERT_ID(); 
 
 -- UPDATE DE ATUALIZAÇÃO DE DADOS DE 'ENDEREÇO'
 
@@ -66,13 +68,13 @@ UPDATE Enderecos
 SET complemento = 'Casa Portão vermelho do lado do Bar do Zé'
 WHERE id_enderecos = @id_endereco1;
 
--- UPDATE DE EXCLUSÃO DE DADOS DE 'ENDEREÇO'
+-- UPDATE DE EXCLUSÃO LÓGICA DE DADOS DE 'ENDEREÇO'
 
 -- UPDATE Enderecos
 -- SET ativo = 0
 -- WHERE @id_enderecos = 3;
 
--- VISUALIZAÇÃO APÓS A EXCLUSÃO
+-- VISUALIZAÇÃO DOS ATIVOS APÓS A EXCLUSÃO
 
 SELECT * 
 FROM Enderecos
@@ -86,7 +88,7 @@ SELECT * FROM Enderecos;
 
 DESCRIBE Enderecos;
 
--- CRIAÇÃO DA TABELA 'CLIENTES'
+-- CRIAÇÃO DA TABELA: 'CLIENTES'
 
 CREATE TABLE Clientes(
     cpf             VARCHAR(14) PRIMARY KEY NOT NULL,
@@ -109,19 +111,19 @@ VALUES
     ('826.387.678-83', 'Emanuel Rafael da Rocha', '11 92670-0066', 'Emanuelrocha444@gmail.com', '1988-08-19', @id_endereco4, 1),
     ('715.395.898-38', 'Lara Caroline Souza', '11 92791-2532', 'Laracarolsouzaa@gmail.com', '1999-01-11', @id_endereco5, 1);
 
--- UPDATE DE ATUALIZAÇÃO DE DADOS DO 'CLIENTE' UTILIZANDO O ID_ENDERECO
+-- UPDATE DE ATUALIZAÇÃO DOS DADOS DO 'CLIENTE' UTILIZANDO O ID_ENDERECO
 
 UPDATE Clientes
 SET telefone = '11 92512-1939'
 WHERE id_endereco_cliente = @id_endereco2;
 
--- UPDATE DE EXCLUSÃO DE DADOS DE 'CLIENTES'
+-- UPDATE DE EXCLUSÃO LÓGICA DE DADOS DO 'CLIENTES'
 
 -- UPDATE Clientes
 -- SET cliente_ativo = 0
 -- WHERE @id_endereco_cliente = 2;
 
--- VISUALIZAÇÃO APÓS A EXCLUSÃO
+-- VISUALIZAÇÃO DOS DADOS APÓS A EXCLUSÃO
 
 SELECT * 
 FROM Clientes
@@ -131,7 +133,7 @@ WHERE cliente_ativo = 1;
 
 SELECT * FROM Clientes;
 
--- DESCREVE A ESTRUTURA DA TABELA 'CLIENTES'
+-- DESCREVE A ESTRUTURA DA TABELA: 'CLIENTES'
 
 DESCRIBE Clientes;
 
@@ -149,7 +151,7 @@ SELECT nome
 FROM Clientes
 WHERE nome LIKE 'E%';
 
--- CRIAÇÃO DA VIEW DO ENDEREÇO E CLIENTES PEGANDO INFORMAÇÃO DAS DUAS TABELAS
+-- CRIAÇÃO DA VIEW DO ENDEREÇO E CLIENTES PEGANDO AS INFORMAÇÕES DAS DUAS TABELAS
 
 CREATE VIEW v_clientes_endereco AS
 SELECT c.cpf, c.nome AS cliente, c. telefone, c.email, e.logradouro, e.cep, e.numero, e.cidade, e.uf
@@ -160,7 +162,6 @@ ORDER BY c.nome;
 -- SELECT PARA VISUALIZAR A VIEW 'CLIENTE' E 'ENDEREÇO' JUNTAS
 
 SELECT * FROM v_clientes_endereco;
-
 
 -- CRIAÇÃO DA TABELA 'CARGOS' 
  
