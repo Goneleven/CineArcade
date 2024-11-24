@@ -332,9 +332,9 @@ VALUES
 
 -- UPDATE DE ATUALIZAÇÃO PARA TABELA 'FORNECEDOR'
 
-UPDATE Enderecos
-SET complemento = 'Mogi - Brasil Indie'
-WHERE id_enderecos = (SELECT id_endereco_fornecedor FROM Fornecedor WHERE cnpj = '37.460.882/0001-88');
+UPDATE Fornecedor
+SET nome = "Ludicube LTDA"
+WHERE id_endereco_fornecedor = @id_enderecof02;
 
 -- UPDATE DE EXCLUSÃO DE DADOS DE 'FORNECEDOR'
 
