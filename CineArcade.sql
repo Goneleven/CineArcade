@@ -113,15 +113,15 @@ VALUES
 
 -- UPDATE DE ATUALIZAÇÃO DOS DADOS DO 'CLIENTE' UTILIZANDO O ID_ENDERECO
 
-UPDATE Clientes
-SET telefone = '11 92512-1939'
-WHERE id_endereco_cliente = @id_endereco2;
+-- UPDATE Clientes
+-- SET telefone = '11 92512-1939'
+-- WHERE id_endereco_cliente = @id_endereco2;
 
 -- UPDATE DE EXCLUSÃO LÓGICA DE DADOS DO 'CLIENTES'
 
--- UPDATE Clientes
--- SET cliente_ativo = 0
--- WHERE @id_endereco_cliente = 2;
+UPDATE Clientes
+SET cliente_ativo = 0
+WHERE @id_endereco_cliente = 2;
 
 -- VISUALIZAÇÃO DOS DADOS APÓS A EXCLUSÃO
 
@@ -224,7 +224,7 @@ CREATE TABLE Funcionarios(
 
 -- DADOS DE 'FUNCIONARIOS'
 
-INSERT INTO Funcionarios (cpf, nome, telefone, login, senha, data_contratacao, id_cargo, funcionarios_ativo)
+INSERT INTO Funcionarios(cpf, nome, telefone, login, senha, data_contratacao, id_cargo, funcionarios_ativo)
 VALUES 
 	('220.959.228-32', 'Raimundo Filipe Lucas Almada', '11 95510-6125', 'Rai4763!', '47861@', '2023-07-10', 03, 1),
 	('765.709.178-97', 'Ryan Igor Thiago Silva', '11 99818-4192', 'Ryan00797@', '4709Ryan@', '2023-06-15', 02, 1),
@@ -243,7 +243,7 @@ WHERE cpf = '220.959.228-32';
 
 -- UPDATE Funcionarios
 -- SET funcionarios_ativo = 0
--- WHERE id_cargo = '148.091.898-99';
+-- WHERE cpf = '148.091.898-99';
 
 -- VISUALIZAÇÃO APÓS A EXCLUSÃO
 
@@ -293,9 +293,9 @@ WHERE id_setor = '2';
 
 -- UPDATE DE EXCLUSÃO DE DADOS DE 'SETORES'
 
--- UPDATE Setores
--- SET setor_ativo = 0
--- WHERE id_cargo = '3';
+UPDATE Setores
+SET setor_ativo = 0
+WHERE id_setor = '3';
 
 -- VISUALIZAÇÃO APÓS A EXCLUSÃO
 
@@ -341,7 +341,7 @@ WHERE id_endereco_fornecedor = @id_enderecof02;
 
 -- UPDATE Fornecedor
 -- SET fornecedor_ativo = 0
--- WHERE id_endereco_fornecedor = '@id_enderecof04';
+-- WHERE id_endereco_fornecedor = @id_enderecof04;
 
 -- VISUALIZAÇÃO APÓS A EXCLUSÃO
 
@@ -388,7 +388,7 @@ VALUES
 
 -- UPDATE DE ATUALIZAÇÃO NA TABELA 'MAQUINAS'
     
-    UPDATE Maquinas
+UPDATE Maquinas
 SET nome = 'Street Fighter II'
 WHERE id_arcade = 4;
 
@@ -650,7 +650,7 @@ VALUES
 
 -- UPDATE DE ATUALIZAÇÃO DA TABELA 'PRODUTO'
     
-    UPDATE Produto
+UPDATE Produto
 SET quantidade_fichas = 9
 WHERE id_pedido = 3;
 
@@ -711,9 +711,9 @@ WHERE id_pagamento = 06;
 
 -- UPDATE DE EXCLUSÃO DE DADOS DE 'METODO_DE_PAGAMENTO'
 
--- UPDATE Metodo_De_Pagamento
--- SET metodo_de_pagamento_ativo = 0
--- WHERE id_pagamento = '04';
+UPDATE Metodo_De_Pagamento
+SET metodo_de_pagamento_ativo = 0
+WHERE id_pagamento = '04';
 
 -- VISUALIZAÇÃO APÓS A EXCLUSÃO
 
@@ -738,18 +738,17 @@ CREATE TABLE Comanda(
     id_pagamento        INT NOT NULL,
     cpf_cliente         VARCHAR(14) NOT NULL,
     cpf_funcionarios    VARCHAR(14) NOT NULL,
-    Valor_total_comanda INT NOT NULL,
-    fichas_total INT NOT NULL, 
+    Valor_total_comanda INT NULL,
+    fichas_total INT NULL, 
     CONSTRAINT fk_id_pagamento FOREIGN KEY (id_pagamento) REFERENCES Metodo_De_Pagamento(id_pagamento),
     CONSTRAINT fk_cpf_cliente FOREIGN KEY (cpf_cliente) REFERENCES Clientes(cpf),
     CONSTRAINT fk_cpf_funcionarios FOREIGN KEY (cpf_funcionarios) REFERENCES Funcionarios(cpf),
     comanda_ativo TINYINT (1) DEFAULT 1
 );
 
-
 -- INSERÇÃO DE DADOS NA TABELA 'COMANDA'
 
-INSERT INTO Comanda (data, horario, id_pagamento, cpf_cliente, cpf_funcionarios, comanda_ativo)
+INSERT INTO Comanda(data, horario, id_pagamento, cpf_cliente, cpf_funcionarios, comanda_ativo)
 VALUES 
     ('2024-11-16', '15:30:00', 1, '104.092.918-46', '220.959.228-32', 1),
     ('2024-11-17', '16:00:00', 2, '099.784.428-04', '765.709.178-97', 1),
